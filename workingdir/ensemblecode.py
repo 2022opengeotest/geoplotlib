@@ -11,13 +11,14 @@ from geoplotlib.core import BatchPainter
 from geoplotlib.utils import BoundingBox
 import numpy as np
 import inspect
+import matplotlib.pyplot as plt
 
 
 class KMeansLayer(BaseLayer):
 
     def __init__(self, data):
         self.data = data
-        self.k = 10
+        self.k = 6
 
     def invalidate(self, proj):
         self.painter = BatchPainter()
@@ -45,13 +46,36 @@ class KMeansLayer(BaseLayer):
             self.k = self.k + 1
             return True
         return False
+
+    def kvalue(self, data):
+        wcss = []
+
+        for i in range(1, 11):
+            #x, y = proj.lonlat_to_screen(self.data['lon'], self.data['lat'])
+            x = data['lon']
+            y = data['lat']
+            k_means = KMeans(n_clusters=i)
+            k_means.fit(np.vstack([x, y]).T)
+            wcss.append(k_means.inertia_)
+
+
+        plt.plot(range(1, 11), wcss)
+        plt.title('The elbow method')
+        plt.xlabel('Number of clusters')
+        plt.ylabel('WCSS')  # within cluster sum of squares
+        plt.show()
 print(inspect.getfile(geoplotlib.utils.BoundingBox))
 
 BoundingBox.JEJU = BoundingBox(north=33.641010, west=125.993352, south=33.134193, east=127.119451)
 
 data = geoplotlib.utils.read_csv('nodis.csv')
-geoplotlib.kde(data, bw=8, cmap='gnuplot', cut_below=1e-4, scaling='lin')
-#geoplotlib.add_layer(heatmap)
+geoplotlib.kde(data, bw=8, cmap='terrain', cut_below=1e-4, scaling='lin')
+
+#kmeans k num
+#gildong = KMeansLayer(data)
+#gildong.kvalue(data)
+
+
 geoplotlib.add_layer(KMeansLayer(data))
 geoplotlib.set_smoothing(True)
 geoplotlib.set_bbox(geoplotlib.utils.BoundingBox.JEJU)
