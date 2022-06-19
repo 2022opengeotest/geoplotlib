@@ -50,7 +50,7 @@ print(inspect.getfile(geoplotlib.utils.BoundingBox))
 BoundingBox.JEJU = BoundingBox(north=33.641010, west=125.993352, south=33.134193, east=127.119451)
 
 data = geoplotlib.utils.read_csv('nodis.csv')
-geoplotlib.kde(data, bw=8, cmap='jet', cut_below=1e-4, scaling='lin')
+geoplotlib.kde(data, bw=8, cmap='gnuplot', cut_below=1e-4, scaling='lin')
 #geoplotlib.add_layer(heatmap)
 geoplotlib.add_layer(KMeansLayer(data))
 geoplotlib.set_smoothing(True)
